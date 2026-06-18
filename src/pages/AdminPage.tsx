@@ -1,9 +1,3 @@
-// ========================================
-// ARQUIVO: AdminPage.tsx - Painel de administração
-// DESCRIÇÃO: Gerenciamento de filmes (criar, editar, deletar)
-// Acesso restrito apenas a usuários com class_series = "Administrativo"
-// ========================================
-
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, AlertCircle, Loader, X } from 'lucide-react';
 import { useAuth } from '@/contexts/useAuth';
@@ -17,8 +11,6 @@ import { Dialog } from '@/components/ui/Dialog';
 import { supabase } from '@/lib/supabase';
 import type { Movie } from '@/types/database';
 
-// ========== CONSTANTES ==========
-// Lista de gêneros disponíveis para filtração
 const GENRES = [
   { value: 'Documentário', label: 'Documentário' },
   { value: 'Animação', label: 'Animação' },
@@ -30,7 +22,6 @@ const GENRES = [
   { value: 'Drama', label: 'Drama' },
 ];
 
-// Lista de turmas/séries para as quais o conteúdo pode ser disponibilizado
 const CLASS_SERIES = [
   { value: '5º Ano', label: '5º Ano' },
   { value: '6º Ano', label: '6º Ano' },
@@ -43,24 +34,18 @@ const CLASS_SERIES = [
 ];
 
 export function AdminPage() {
-  // ========== CONTEXTOS E HOOKS ==========
   const { profile } = useAuth();
   const { toast } = useToast();
   const { createMovie, uploadFile, loading, error, deleteMovie } = useMovieManagement();
   
-  // ========== ESTADOS - FILMES ==========
-  const [movies, setMovies] = useState<Movie[]>([]); // Lista de filmes cadastrados
-  const [loadingMovies, setLoadingMovies] = useState(false); // Carregando lista de filmes
-  const [deletingId, setDeletingId] = useState<string | null>(null); // ID do filme sendo deletado
-  
-  // ========== ESTADOS - EDIÇÃO ==========
-  const [editingMovie, setEditingMovie] = useState<Movie | null>(null); // Filme sendo editado
-  const [editThumbnailUrl, setEditThumbnailUrl] = useState(''); // URL da capa durante edição
-  const [editUploadProgress, setEditUploadProgress] = useState(false); // Progresso de upload em edição
-  const [updatingCover, setUpdatingCover] = useState(false); // Atualizando capa
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loadingMovies, setLoadingMovies] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
+  const [editThumbnailUrl, setEditThumbnailUrl] = useState('');
+  const [editUploadProgress, setEditUploadProgress] = useState(false);
+  const [updatingCover, setUpdatingCover] = useState(false);
 
-  // ========== ESTADOS - CRIAÇÃO ==========
-  // Formulário para criar novo filme
   const [formData, setFormData] = useState<CreateMovieInput>({
     title: '',
     description: '',
@@ -72,25 +57,19 @@ export function AdminPage() {
     award_category: '',
   });
 
-  // ========== ESTADOS - UPLOAD ==========
   const [uploadedFiles, setUploadedFiles] = useState<{
-    thumbnail?: string; // URL da thumbnail após upload
+    thumbnail?: string;
   }>({});
 
   const [uploadProgress, setUploadProgress] = useState<{
-    thumbnail?: boolean; // Indicador de progresso de upload
+    thumbnail?: boolean;
   }>({});;
 
-  // ========== EFEITOS ==========
-  // Carrega a lista de filmes quando a página abre
+  // Load movies on mount
   useEffect(() => {
     loadMovies();
   }, []);
 
-  // ========== FUNÇÕES ==========
-  /**
-   * Carrega todos os filmes da base de dados e os ordena por data de criação
-   */
   const loadMovies = async () => {
     setLoadingMovies(true);
     try {
@@ -107,6 +86,18 @@ export function AdminPage() {
       setLoadingMovies(false);
     }
   };
+
+  const handleDeleteMovie = async (movieId: string) => {
+    if (!confirm('Tem certeza que deseja deletar este filme?')) return;
+
+    setDeletingId(movieId);
+    try {
+      const { error: err } = await deleteMovie(movieId);
+      if (err) {
+        toast({
+          title: 'Erro ao deletar filme',
+          description: err.message,
+          variant: 'error',
         });
         return;
       }
