@@ -1,17 +1,26 @@
+// ========================================
+// ARQUIVO: LandingPage.tsx - Página inicial pública
+// DESCRIÇÃO: Landing page para visitantes não autenticados
+// Exibe informações sobre a plataforma, recursos e call-to-action para login
+// ========================================
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Play, Search, Heart, Clock, Star, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export function LandingPage() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  // ========== ESTADOS ==========
+  const [menuOpen, setMenuOpen] = useState(false); // Controla abertura do menu mobile
 
   return (
     <div className="min-h-screen bg-[#F8F9FC] dark:bg-[#000000]">
-      {/* Navigation */}
+      {/* ========== NAVEGAÇÃO ========== */}
+      {/* Barra de navegação sticky com logo, links e botão de login */}
       <nav className="sticky top-0 z-50 bg-white/80 dark:bg-[#0C1821]/80 backdrop-blur-md border-b border-[#92A3C0]/10 dark:border-[#324A5F]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
+            {/* Logo e nome da aplicação */}
             <div className="flex items-center gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#A1B5D8] dark:bg-[#1B2A41] overflow-hidden">
                 <img src="/pipoca.ico" alt="MCPFMovies" className="h-full w-full object-contain" />
@@ -19,7 +28,8 @@ export function LandingPage() {
               <span className="font-bold text-lg tracking-tight text-[#2D2B2B] dark:text-[#CCC9DC]">MCPFMovies</span>
             </div>
 
-            {/* Desktop Menu */}
+            {/* ========== MENU DESKTOP ========== */}
+            {/* Menu de navegação visível apenas em desktop */}
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-sm font-medium text-[#92A3C0] dark:text-[#A1B5D8] hover:text-[#2D2B2B] dark:hover:text-[#CCC9DC] transition-colors">
                 Recursos
@@ -27,6 +37,7 @@ export function LandingPage() {
               <a href="#" className="text-sm font-medium text-[#92A3C0] dark:text-[#A1B5D8] hover:text-[#2D2B2B] dark:hover:text-[#CCC9DC] transition-colors">
                 Sobre
               </a>
+              {/* Link para página de login */}
               <Link
                 to="/login"
                 className="px-6 py-2 rounded-lg bg-[#A1B5D8] dark:bg-[#1B2A41] text-[#2D2B2B] dark:text-[#CCC9DC] font-medium hover:bg-[#92A3C0] dark:hover:bg-[#324A5F] transition-colors"
@@ -35,7 +46,8 @@ export function LandingPage() {
               </Link>
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* ========== BOTÃO MENU MOBILE ========== */}
+            {/* Botão hamburger para abrir menu mobile */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="md:hidden p-2 text-[#2D2B2B] dark:text-[#CCC9DC]"
@@ -44,7 +56,8 @@ export function LandingPage() {
             </button>
           </div>
 
-          {/* Mobile Menu */}
+          {/* ========== MENU MOBILE ========== */}
+          {/* Menu de navegação visível apenas em mobile */}
           {menuOpen && (
             <div className="md:hidden pb-4 space-y-4">
               <a href="#features" className="block text-sm font-medium text-[#92A3C0] dark:text-[#A1B5D8] hover:text-[#2D2B2B] dark:hover:text-[#CCC9DC]">

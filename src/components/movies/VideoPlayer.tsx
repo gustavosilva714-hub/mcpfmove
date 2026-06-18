@@ -1,3 +1,9 @@
+// ========================================
+// ARQUIVO: VideoPlayer.tsx - Reprodutor de vídeo multi-fonte
+// DESCRIÇÃO: Player capaz de reproduzir vídeos de YouTube, MEGA, Google Drive e arquivos locais
+// Inclui controles de reprodução, volume, fullscreen e sistema de avaliação
+// ========================================
+
 import React, { useRef, useState, useEffect } from 'react';
 import { X, Play, Pause, Volume2, VolumeX, Maximize, Minimize, SkipBack, SkipForward } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -6,44 +12,68 @@ import { useWatchHistory, useRating } from '@/hooks/useMovies';
 import { Star } from 'lucide-react';
 import { useAuth } from '@/contexts/useAuth';
 
+// ========== INTERFACE ==========
+// Props do componente VideoPlayer
 interface VideoPlayerProps {
-  movie: MovieWithMeta;
-  onClose: () => void;
-  onRefetch?: () => void;
+  movie: MovieWithMeta; // Dados do filme/vídeo a ser reproduzido
+  onClose: () => void; // Callback para fechar o player
+  onRefetch?: () => void; // Callback para atualizar dados (opcional)
 }
 
 export function VideoPlayer({ movie, onClose }: VideoPlayerProps) {
+  // ========== CONTEXTOS E HOOKS ==========
   const { user } = useAuth();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [playing, setPlaying] = useState(false);
-  const [muted, setMuted] = useState(false);
-  const [fullscreen, setFullscreen] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
-  const [showControls, setShowControls] = useState(true);
-  const [userRating, setUserRating] = useState(movie.user_rating || 0);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [videoError, setVideoError] = useState<string | null>(null);
-  const controlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const { recordWatch } = useWatchHistory();
-  const { setRating } = useRating();
+  const { recordWatch } = useWatchHistory(); // Para registrar visualização
+  const { setRating } = useRating(); // Para salvar avaliações
 
+  // ========== REFERÊNCIAS DO DOM ==========
+  const videoRef = useRef<HTMLVideoElement>(null); // Referência ao elemento de vídeo
+  const containerRef = useRef<HTMLDivElement>(null); // Referência ao container do player
+
+  // ========== ESTADOS DO PLAYER ==========
+  const [playing, setPlaying] = useState(false); // Indica se está reproduzindo
+  const [muted, setMuted] = useState(false); // Indica se está mudo
+  const [fullscreen, setFullscreen] = useState(false); // Indica se está em fullscreen
+  const [currentTime, setCurrentTime] = useState(0); // Tempo atual do vídeo em segundos
+  const [duration, setDuration] = useState(0); // Duração total do vídeo em segundos
+  const [volume, setVolume] = useState(1); // Volume atual (0-1)
+  const [showControls, setShowControls] = useState(true); // Mostra/oculta controles
+  
+  // ========== ESTADOS DE AVALIAÇÃO ==========
+  const [userRating, setUserRating] = useState(movie.user_rating || 0); // Avaliação do usuário (1-5 estrelas)
+  const [hoverRating, setHoverRating] = useState(0); // Avaliação ao passar o mouse
+
+  // ========== ESTADOS DE ERRO ==========
+  const [videoError, setVideoError] = useState<string | null>(null); // Mensagem de erro ao carregar vídeo
+
+  // ========== TIMER PARA CONTROLES ==========
+  const controlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null); // Timer para ocultar controles
+
+  // ========== EFEITOS ==========
+  /**
+   * Configura event listeners para o player ao montar
+   * Controla atalhos de teclado (ESC, espaço)
+   * Limpa listeners ao desmontar
+   */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+      if (e.key === 'Escape') onClose(); // ESC fecha o player
+      if (e.key === ' ') { e.preventDefault(); togglePlay(); } // Espaço ativa/pausa reprodução
     };
     window.addEventListener('keydown', handler);
+    // Oculta a scrollbar enquanto o player está aberto
     document.body.style.overflow = 'hidden';
     return () => {
       window.removeEventListener('keydown', handler);
       document.body.style.overflow = '';
-      setVideoError(null); // Reset error when closing
+      setVideoError(null); // Limpa erro ao fechar
     };
   }, []);
 
+  // ========== HANDLERS DE REPRODUÇÃO ==========
+  /**
+   * Alterna entre play e pausa
+   */
   const togglePlay = () => {
     if (!videoRef.current) return;
     if (playing) videoRef.current.pause();

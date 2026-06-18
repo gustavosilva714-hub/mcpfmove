@@ -1,3 +1,8 @@
+// ========================================
+// ARQUIVO: LoginPage.tsx - Página de login
+// DESCRIÇÃO: Autentica usuários com email e senha
+// ========================================
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from 'lucide-react';
@@ -8,26 +13,42 @@ import { useToast } from '@/components/ui/Toast';
 
 
 export function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  // ========== ESTADOS ==========
+  const [email, setEmail] = useState(''); // Email do usuário
+  const [password, setPassword] = useState(''); // Senha do usuário
+  const [showPassword, setShowPassword] = useState(false); // Controla visibilidade da senha
+  const [loading, setLoading] = useState(false); // Indicador de carregamento durante login
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({}); // Erros de validação
+
+  // ========== CONTEXTOS E HOOKS ==========
   const { signIn } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-
+  // ========== FUNÇÕES ==========
+  /**
+   * Valida os campos de email e senha
+   * Retorna true se todos os campos são válidos
+   */
   const validate = () => {
     const e: typeof errors = {};
+    // Valida email: obrigatório e formato válido
     if (!email) e.email = 'E-mail é obrigatório';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = 'E-mail inválido';
+    // Valida senha: obrigatória e mínimo de 6 caracteres
     if (!password) e.password = 'Senha é obrigatória';
     else if (password.length < 6) e.password = 'Mínimo de 6 caracteres';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
+  /**
+   * Manipula o envio do formulário de login
+   * 1. Valida os campos
+   * 2. Chama a função signIn do contexto
+   * 3. Se sucesso, navega para /home
+   * 4. Se erro, mostra mensagem de erro
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
@@ -37,6 +58,7 @@ export function LoginPage() {
       toast({ title: 'Erro ao fazer login', description: 'Verifique suas credenciais e tente novamente.', variant: 'error' });
     } else {
       toast({ title: 'Login realizado com sucesso!', variant: 'success' });
+      // Navega para /home após login bem-sucedido
       navigate('/home');
     }
     setLoading(false);
@@ -44,8 +66,10 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen flex bg-[#F8F9FC] dark:bg-[#000000]">
-      {/* Left panel */}
+      {/* ========== PAINEL ESQUERDO (DESKTOP) ========== */}
+      {/* Painel de design com logo e citação (visível apenas em desktop) */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-2/5 flex-col justify-between p-12 bg-[#A1B5D8] dark:bg-[#0C1821] relative overflow-hidden">
+        {/* Fundo decorativo com SVG */}
         <div className="absolute inset-0 opacity-10">
           <svg viewBox="0 0 400 600" className="w-full h-full" fill="none">
             <circle cx="200" cy="300" r="250" stroke="white" strokeWidth="80" />
@@ -53,7 +77,9 @@ export function LoginPage() {
             <circle cx="50" cy="500" r="100" stroke="white" strokeWidth="30" />
           </svg>
         </div>
+        {/* Conteúdo do painel esquerdo */}
         <div className="relative">
+          {/* Botão de voltar para a landing page */}
           <Link
             to="/"
             className="inline-flex items-center gap-2 mb-8 p-2 -ml-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
@@ -62,6 +88,7 @@ export function LoginPage() {
             <ArrowLeft className="h-4 w-4" />
             <span className="text-sm font-medium">Voltar</span>
           </Link>
+          {/* Logo e nome da aplicação */}
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 overflow-hidden">
               <img src="/pipoca.ico" alt="MCPFMovies" className="h-full w-full object-contain" />
@@ -69,21 +96,25 @@ export function LoginPage() {
             <span className="font-bold text-xl text-white tracking-tight">MCPFMovies</span>
           </div>
         </div>
+        {/* Citação inspiradora */}
         <div className="relative">
           <blockquote className="text-white/90 text-2xl font-light leading-relaxed mb-6">
             "O cinema é um espelho que reflete o mundo como queremos que ele seja."
           </blockquote>
           <p className="text-white/60 text-sm">Plataforma de filmes institucionais</p>
         </div>
+        {/* Copyright */}
         <div className="relative text-white/40 text-xs">
           © {new Date().getFullYear()} MCPFMovies
         </div>
       </div>
 
-      {/* Right panel */}
+      {/* ========== PAINEL DIREITO (FORMULÁRIO) ========== */}
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
+          {/* Header do formulário */}
           <div className="mb-8">
+            {/* Logo e botão voltar (mobile) */}
             <div className="flex items-center justify-between mb-6 lg:hidden">
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#A1B5D8] dark:bg-[#1B2A41] overflow-hidden">
@@ -99,11 +130,14 @@ export function LoginPage() {
                 <ArrowLeft className="h-5 w-5" />
               </Link>
             </div>
+            {/* Título e descrição */}
             <h2 className="text-2xl font-bold text-[#2D2B2B] dark:text-[#CCC9DC]">Bem-vindo de volta</h2>
             <p className="text-[#92A3C0] dark:text-[#A1B5D8] mt-1 text-sm">Entre com sua conta para continuar</p>
           </div>
 
+          {/* ========== FORMULÁRIO DE LOGIN ========== */}
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Campo de email */}
             <Input
               label="E-mail"
               type="email"
@@ -114,6 +148,8 @@ export function LoginPage() {
               leftIcon={<Mail className="h-4 w-4" />}
               autoComplete="email"
             />
+            
+            {/* Campo de senha com botão de mostrar/ocultar */}
             <Input
               label="Senha"
               type={showPassword ? 'text' : 'password'}
@@ -130,6 +166,7 @@ export function LoginPage() {
               autoComplete="current-password"
             />
 
+            {/* Link para recuperar senha */}
             <div className="flex justify-end">
               <Link
                 to="/forgot-password"
@@ -139,6 +176,7 @@ export function LoginPage() {
               </Link>
             </div>
 
+            {/* Botão de envio do formulário */}
             <Button
               type="submit"
               variant="primary"
@@ -149,6 +187,8 @@ export function LoginPage() {
             </Button>
           </form>
 
+          {/* ========== LINK PARA REGISTRO ========== */}
+          {/* Permite que novos usuários criem uma conta */}
           <p className="mt-6 text-center text-sm text-[#92A3C0] dark:text-[#A1B5D8]">
             Não tem uma conta?{' '}
             <Link

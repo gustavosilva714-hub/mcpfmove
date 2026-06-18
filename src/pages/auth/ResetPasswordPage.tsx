@@ -1,3 +1,8 @@
+// ========================================
+// ARQUIVO: ResetPasswordPage.tsx - Página de redefinição de senha
+// DESCRIÇÃO: Fluxo em etapas para redefinir senha (email -> código -> nova senha)
+// ========================================
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Lock, Eye, EyeOff, Mail, CheckCircle, ArrowLeft } from 'lucide-react';
@@ -6,20 +11,28 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useToast } from '@/components/ui/Toast';
 
+// Tipo para controlar qual etapa do fluxo está sendo exibida
 type Step = 'email' | 'code' | 'password' | 'success';
 
 export function ResetPasswordPage() {
-  const [step, setStep] = useState<Step>('email');
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  // ========== ESTADOS ==========
+  const [step, setStep] = useState<Step>('email'); // Etapa atual do fluxo de redefinição
+  const [email, setEmail] = useState(''); // Email do usuário
+  const [code, setCode] = useState(''); // Código OTP enviado por email
+  const [password, setPassword] = useState(''); // Nova senha
+  const [confirmPassword, setConfirmPassword] = useState(''); // Confirmação da nova senha
+  const [showPassword, setShowPassword] = useState(false); // Controla visibilidade da senha
+  const [loading, setLoading] = useState(false); // Indicador de carregamento
+  const [errors, setErrors] = useState<Record<string, string>>({}); // Erros de validação
+  
+  // ========== CONTEXTOS ==========
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // ========== FUNÇÕES DE VALIDAÇÃO ==========
+  /**
+   * Valida o email para a primeira etapa
+   */
   const validateEmail = () => {
     const e: Record<string, string> = {};
     if (!email) e.email = 'E-mail é obrigatório';

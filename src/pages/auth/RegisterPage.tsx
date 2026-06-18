@@ -1,3 +1,8 @@
+// ========================================
+// ARQUIVO: RegisterPage.tsx - Página de registro
+// DESCRIÇÃO: Permite que novos usuários criem uma conta
+// ========================================
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from 'lucide-react';
@@ -7,29 +12,48 @@ import { Input } from '@/components/ui/Input';
 import { useToast } from '@/components/ui/Toast';
 
 export function RegisterPage() {
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  // ========== ESTADOS ==========
+  const [fullName, setFullName] = useState(''); // Nome completo do novo usuário
+  const [email, setEmail] = useState(''); // Email do novo usuário
+  const [password, setPassword] = useState(''); // Senha
+  const [confirmPassword, setConfirmPassword] = useState(''); // Confirmação de senha
+  const [showPassword, setShowPassword] = useState(false); // Controla visibilidade da senha
+  const [loading, setLoading] = useState(false); // Indicador de carregamento durante registro
+  const [errors, setErrors] = useState<Record<string, string>>({}); // Erros de validação
+
+  // ========== CONTEXTOS E HOOKS ==========
   const { signUp } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // ========== FUNÇÕES ==========
+  /**
+   * Valida todos os campos do formulário de registro
+   * Retorna true se todos os campos são válidos
+   */
   const validate = () => {
     const e: Record<string, string> = {};
+    // Valida nome completo: obrigatório
     if (!fullName.trim()) e.fullName = 'Nome completo é obrigatório';
+    // Valida email: obrigatório e formato válido
     if (!email) e.email = 'E-mail é obrigatório';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = 'E-mail inválido';
+    // Valida senha: obrigatória e mínimo de 6 caracteres
     if (!password) e.password = 'Senha é obrigatória';
     else if (password.length < 6) e.password = 'Mínimo de 6 caracteres';
+    // Valida confirmação de senha: deve ser igual à senha
     if (password !== confirmPassword) e.confirmPassword = 'Senhas não conferem';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
+  /**
+   * Manipula o envio do formulário de registro
+   * 1. Valida os campos
+   * 2. Chama a função signUp do contexto
+   * 3. Se sucesso, navega para o login
+   * 4. Se erro, mostra mensagem de erro
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
@@ -39,6 +63,7 @@ export function RegisterPage() {
       toast({ title: 'Erro ao criar conta', description: error.message, variant: 'error' });
     } else {
       toast({ title: 'Conta criada com sucesso!', description: 'Verifique seu e-mail para confirmar o cadastro.', variant: 'success' });
+      // Navega para login após sucesso no registro
       navigate('/login');
     }
     setLoading(false);
@@ -46,15 +71,19 @@ export function RegisterPage() {
 
   return (
     <div className="min-h-screen flex bg-[#F8F9FC] dark:bg-[#000000]">
-      {/* Left panel */}
+      {/* ========== PAINEL ESQUERDO (DESKTOP) ========== */}
+      {/* Painel de design com logo e mensagem (visível apenas em desktop) */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-2/5 flex-col justify-between p-12 bg-[#AFC7EF] dark:bg-[#0C1821] relative overflow-hidden">
+        {/* Fundo decorativo com SVG */}
         <div className="absolute inset-0 opacity-10">
           <svg viewBox="0 0 400 600" className="w-full h-full" fill="none">
             <rect x="50" y="100" width="300" height="400" rx="20" stroke="white" strokeWidth="60" />
             <rect x="150" y="50" width="100" height="500" stroke="white" strokeWidth="20" />
           </svg>
         </div>
+        {/* Conteúdo do painel esquerdo */}
         <div className="relative">
+          {/* Botão de voltar para a landing page */}
           <Link
             to="/"
             className="inline-flex items-center gap-2 mb-8 p-2 -ml-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"

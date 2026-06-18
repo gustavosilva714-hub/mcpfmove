@@ -1,3 +1,8 @@
+// ========================================
+// ARQUIVO: ProfilePage.tsx - Página do perfil do usuário
+// DESCRIÇÃO: Gerenciamento de informações pessoais, avatar e painel de admin
+// ========================================
+
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/useAuth';
 import { supabase } from '@/lib/supabase';
@@ -11,7 +16,7 @@ import { Camera, User, Film } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Movie } from '@/types/database';
 
-
+// Opções disponíveis para seleção de turma/função
 const CLASS_OPTIONS = [
   { value: '', label: 'Selecione a turma' },
   { value: '5º Ano', label: '5º Ano' },
@@ -23,23 +28,32 @@ const CLASS_OPTIONS = [
   { value: '2º Médio', label: '2º Médio' },
   { value: '3º Médio', label: '3º Médio' },
   { value: 'Professor', label: 'Professor' },
-  { value: 'Administrativo', label: 'Administrativo' },
+  { value: 'Administrativo', label: 'Administrativo' }, // Importante: Esta opção ativa o painel de admin
 ];
 
 export function ProfilePage() {
+  // ========== ESTADOS DO CONTEXTO ==========
   const { user, profile, updateProfile, refreshProfile } = useAuth();
   const { toast } = useToast();
   const { fetchHistory } = useWatchHistory();
   const fileRef = useRef<HTMLInputElement>(null);
 
+  // ========== ESTADOS LOCAIS ==========
+  // Dados do usuário que podem ser editados
   const [fullName, setFullName] = useState(profile?.full_name || '');
   const [classSeries, setClassSeries] = useState(profile?.class_series || '');
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || '');
-  const [saving, setSaving] = useState(false);
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  
+  // Estados de carregamento
+  const [saving, setSaving] = useState(false); // Ao salvar o perfil
+  const [uploadingAvatar, setUploadingAvatar] = useState(false); // Ao enviar foto
+  
+  // Estados do histórico de visualizações
   const [watchHistory, setWatchHistory] = useState<Movie[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
+  // ========== EFEITOS ==========
+  // Atualiza os dados do formulário quando o perfil muda
   useEffect(() => {
     if (profile) {
       setFullName(profile.full_name || '');
@@ -48,6 +62,7 @@ export function ProfilePage() {
     }
   }, [profile]);
 
+  // Carrega o histórico de visualizações do usuário quando a página abre
   useEffect(() => {
     if (user) {
       setLoadingHistory(true);
@@ -58,19 +73,34 @@ export function ProfilePage() {
     }
   }, [user]);
 
+  // ========== HANDLERS ==========
+  /**
+   * Manipula o upload da foto de perfil
+   * 1. Pega o arquivo selecionado
+   * 2. Faz upload no Supabase Storage
+   * 3. Obtém a URL pública
+   * 4. Atualiza o perfil no banco de dados
+   * 5. Sincroniza o contexto de autenticação
+   */
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     setUploadingAvatar(true);
     try {
+      // Extrai a extensão do arquivo
       const ext = file.name.split('.').pop();
+      // Cria um caminho único para o arquivo
       const path = `avatars/${user.id}.${ext}`;
+      // Faz upload do arquivo no Supabase Storage (upsert = sobrescreve se existir)
       const { error: upError } = await supabase.storage.from('media').upload(path, file, { upsert: true });
       if (upError) throw upError;
+      // Obtém a URL pública do arquivo
       const { data } = supabase.storage.from('media').getPublicUrl(path);
       const url = data.publicUrl;
+      // Atualiza o estado local e o banco de dados
       setAvatarUrl(url);
       await updateProfile({ avatar_url: url });
+      // Sincroniza o contexto para refletir a mudança imediatamente
       await refreshProfile();
       toast({ title: 'Foto atualizada!', variant: 'success' });
     } catch (e) {
@@ -79,19 +109,26 @@ export function ProfilePage() {
     setUploadingAvatar(false);
   };
 
+  /**
+   * Salva as alterações do perfil (nome e turma/função)
+   * Importante: ao mudar para "Administrativo", o painel de admin aparecer
+   */
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    // Atualiza o perfil no banco de dados
     const { error } = await updateProfile({ full_name: fullName, class_series: classSeries });
     if (error) {
       toast({ title: 'Erro ao salvar', description: error.message, variant: 'error' });
     } else {
+      // Sincroniza o contexto para refletir as mudanças imediatamente
       await refreshProfile();
       toast({ title: 'Perfil atualizado!', variant: 'success' });
     }
     setSaving(false);
   };
 
+  // Gera as iniciais do usuário para exibição no avatar quando não há foto
   const initials = fullName
     ? fullName.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
     : user?.email?.charAt(0).toUpperCase() || 'U';

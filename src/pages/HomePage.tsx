@@ -1,3 +1,8 @@
+// ========================================
+// ARQUIVO: HomePage.tsx - Página principal da aplicação
+// DESCRIÇÃO: Exibe catálogo de filmes com opções de busca, filtro por gênero, turma e duração
+// ========================================
+
 import { useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { useMovies } from '@/hooks/useMovies';
@@ -7,6 +12,8 @@ import { Header } from '@/components/layout/Header';
 import { Select } from '@/components/ui/Select';
 import type { MovieWithMeta } from '@/types/database';
 
+// ========== CONSTANTES ==========
+// Lista de gêneros disponíveis para filtração
 const GENRES = [
   { value: '', label: 'Todos os gêneros' },
   { value: 'Documentário', label: 'Documentário' },
@@ -19,6 +26,7 @@ const GENRES = [
   { value: 'Drama', label: 'Drama' },
 ];
 
+// Lista de turmas/séries para filtração
 const CLASS_SERIES = [
   { value: '', label: 'Todas as turmas' },
   { value: '5º Ano', label: '5º Ano' },
@@ -31,6 +39,7 @@ const CLASS_SERIES = [
   { value: '3º Médio', label: '3º Médio' },
 ];
 
+// Opções de duração para filtração
 const DURATION_OPTIONS = [
   { value: '', label: 'Qualquer duração' },
   { value: 'short', label: 'Curto (até 30min)' },
@@ -39,14 +48,18 @@ const DURATION_OPTIONS = [
 ];
 
 export function HomePage() {
-  const [search, setSearch] = useState('');
-  const [genre, setGenre] = useState('');
-  const [classSeries, setClassSeries] = useState('');
-  const [duration, setDuration] = useState('');
-  const [playingMovie, setPlayingMovie] = useState<MovieWithMeta | null>(null);
+  // ========== ESTADOS DE FILTRO ==========
+  const [search, setSearch] = useState(''); // Termo de busca
+  const [genre, setGenre] = useState(''); // Gênero selecionado
+  const [classSeries, setClassSeries] = useState(''); // Turma/série selecionada
+  const [duration, setDuration] = useState(''); // Duração selecionada
+  const [playingMovie, setPlayingMovie] = useState<MovieWithMeta | null>(null); // Filme sendo reproduzido
 
+  // ========== HOOKS DE DADOS ==========
+  // Busca filmes com base nos filtros
   const { movies, loading, error, refetch } = useMovies({ search, genre, classSeries });
 
+  // Aplica filtro de duração aos filmes
   const filteredMovies = movies.filter(m => {
     if (duration === 'short') return (m.duration || 0) <= 30;
     if (duration === 'medium') return (m.duration || 0) > 30 && (m.duration || 0) <= 60;

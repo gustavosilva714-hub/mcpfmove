@@ -1,3 +1,8 @@
+// ========================================
+// ARQUIVO: ForgotPasswordPage.tsx - Página de recuperação de senha
+// DESCRIÇÃO: Permite que usuários solicitem um email de redefinição de senha
+// ========================================
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
@@ -7,23 +12,37 @@ import { Input } from '@/components/ui/Input';
 import { useToast } from '@/components/ui/Toast';
 
 export function ForgotPasswordPage() {
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState('');
+  // ========== ESTADOS ==========
+  const [email, setEmail] = useState(''); // Email para recuperação de senha
+  const [loading, setLoading] = useState(false); // Indicador de carregamento durante envio
+  const [sent, setSent] = useState(false); // Indica se o email foi enviado com sucesso
+  const [error, setError] = useState(''); // Erro de validação ou envio
+  
+  // ========== CONTEXTOS E HOOKS ==========
   const { resetPassword } = useAuth();
   const { toast } = useToast();
 
+  // ========== FUNÇÕES ==========
+  /**
+   * Manipula o envio do formulário de recuperação de senha
+   * 1. Valida o email
+   * 2. Envia a solicitação ao Supabase
+   * 3. Mostra mensagem de sucesso ou erro
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Valida se o email foi preenchido
     if (!email) { setError('E-mail é obrigatório'); return; }
+    // Valida o formato do email
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('E-mail inválido'); return; }
     setError('');
     setLoading(true);
+    // Envia solicitação de redefinição de senha
     const { error: err } = await resetPassword(email);
     if (err) {
       toast({ title: 'Erro ao enviar e-mail', description: err.message, variant: 'error' });
     } else {
+      // Se bem-sucedido, mostra mensagem de confirmação
       setSent(true);
     }
     setLoading(false);
