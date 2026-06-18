@@ -7,7 +7,7 @@ import { Select } from '@/components/ui/Select';
 import { Header } from '@/components/layout/Header';
 import { useToast } from '@/components/ui/Toast';
 import { useWatchHistory } from '@/hooks/useMovies';
-import { Camera, User } from 'lucide-react';
+import { Camera, User, Film } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Movie } from '@/types/database';
 
@@ -27,7 +27,7 @@ const CLASS_OPTIONS = [
 ];
 
 export function ProfilePage() {
-  const { user, profile, updateProfile } = useAuth();
+  const { user, profile, updateProfile, refreshProfile } = useAuth();
   const { toast } = useToast();
   const { fetchHistory } = useWatchHistory();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -71,6 +71,7 @@ export function ProfilePage() {
       const url = data.publicUrl;
       setAvatarUrl(url);
       await updateProfile({ avatar_url: url });
+      await refreshProfile();
       toast({ title: 'Foto atualizada!', variant: 'success' });
     } catch (e) {
       toast({ title: 'Erro ao enviar foto', description: (e as Error).message, variant: 'error' });
@@ -85,6 +86,7 @@ export function ProfilePage() {
     if (error) {
       toast({ title: 'Erro ao salvar', description: error.message, variant: 'error' });
     } else {
+      await refreshProfile();
       toast({ title: 'Perfil atualizado!', variant: 'success' });
     }
     setSaving(false);
@@ -197,6 +199,30 @@ export function ProfilePage() {
           </div>
         </form>
       </div>
+
+      {/* Admin Section - Only visible for admins */}
+      {profile?.class_series === 'Administrativo' && (
+        <div className="rounded-xl border border-[#A1B5D8]/30 dark:border-[#1B2A41] bg-gradient-to-r from-[#A1B5D8]/10 to-[#92A3C0]/10 dark:from-[#1B2A41]/30 dark:to-[#0C1821] p-6">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-3">
+              <div className="rounded-lg bg-[#A1B5D8] dark:bg-[#1B2A41] p-3 mt-0.5">
+                <Film className="h-5 w-5 text-[#2D2B2B] dark:text-[#CCC9DC]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#2D2B2B] dark:text-[#CCC9DC]">Painel de Administração</h3>
+                <p className="text-sm text-[#92A3C0] dark:text-[#A1B5D8] mt-1">
+                  Gerencie o catálogo de filmes e séries da plataforma.
+                </p>
+              </div>
+            </div>
+            <Link to="/admin">
+              <Button variant="primary" size="sm">
+                Cadastrar Filmes
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Watch History */}
       <div className="rounded-xl border border-[#92A3C0]/20 dark:border-[#324A5F]/50 bg-white dark:bg-[#0C1821] p-6">

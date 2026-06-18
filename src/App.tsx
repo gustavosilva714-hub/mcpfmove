@@ -13,6 +13,10 @@ import { ProfilePage } from '@/pages/ProfilePage';
 import { SettingsPage } from '@/pages/SettingsPage';
 import { AdminPage } from '@/pages/AdminPage';
 import { SetupPage } from '@/pages/SetupPage';
+import { LandingPage } from '@/pages/LandingPage';
+import { SeriesPage } from '@/pages/SeriesPage';
+import { GenresPage } from '@/pages/GenresPage';
+import { CatalogPage } from '@/pages/CatalogPage';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { RegisterPage } from '@/pages/auth/RegisterPage';
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage';
@@ -66,6 +70,10 @@ function AppContent() {
       <AuthProvider>
         <ToastProvider>
           <Routes>
+            {/* Public Landing Page */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/landing" element={<Navigate to="/" replace />} />
+            
             {/* Auth Routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
@@ -80,7 +88,10 @@ function AppContent() {
                 </ProtectedRoute>
               }
             >
-              <Route path="/" element={<HomePage />} />
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/series" element={<SeriesPage />} />
+              <Route path="/genres" element={<GenresPage />} />
+              <Route path="/catalog" element={<CatalogPage />} />
               <Route path="/favorites" element={<FavoritesPage />} />
               <Route path="/watch-later" element={<WatchLaterPage />} />
               <Route path="/awarded" element={<AwardedPage />} />

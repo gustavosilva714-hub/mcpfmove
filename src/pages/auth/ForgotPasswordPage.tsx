@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Film, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/useAuth';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -32,11 +32,20 @@ export function ForgotPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-[#F8F9FC] dark:bg-[#000000]">
       <div className="w-full max-w-md">
-        <div className="flex items-center gap-2 mb-8">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#A1B5D8] dark:bg-[#1B2A41]">
-            <Film className="h-4 w-4 text-[#2D2B2B] dark:text-[#CCC9DC]" />
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#A1B5D8] dark:bg-[#1B2A41] overflow-hidden">
+              <img src="/pipoca.ico" alt="MCPFMovies" className="h-full w-full object-contain" />
+            </div>
+            <span className="font-bold text-lg tracking-tight text-[#2D2B2B] dark:text-[#CCC9DC]">MCPFMovies</span>
           </div>
-          <span className="font-bold text-lg tracking-tight text-[#2D2B2B] dark:text-[#CCC9DC]">MCPFMovies</span>
+          <Link
+            to="/login"
+            className="p-2 rounded-lg text-[#92A3C0] dark:text-[#A1B5D8] hover:bg-[#A1B5D8]/10 dark:hover:bg-[#1B2A41] transition-colors"
+            title="Voltar para o login"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
         </div>
 
         <div className="rounded-xl border border-[#92A3C0]/20 dark:border-[#324A5F] bg-white dark:bg-[#0C1821] p-8">

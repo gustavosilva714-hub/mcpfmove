@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Heart, Clock, Trophy, User, Settings, Menu, X, LogOut, Film, Plus } from 'lucide-react';
+import { Home, Heart, Clock, Trophy, User, Settings, Menu, X, LogOut, Plus, Tv, Layers, Grid3x3 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useAuth } from '@/contexts/useAuth';
 
 const navItems = [
-  { to: '/', label: 'Início', icon: Home, end: true },
+  { to: '/home', label: 'Início', icon: Home, end: true },
+  { to: '/series', label: 'Séries', icon: Tv },
+  { to: '/genres', label: 'Gêneros', icon: Layers },
+  { to: '/catalog', label: 'Catálogo', icon: Grid3x3 },
   { to: '/favorites', label: 'Favoritos', icon: Heart },
   { to: '/watch-later', label: 'Assistir Mais Tarde', icon: Clock },
   { to: '/awarded', label: 'Premiados', icon: Trophy },
@@ -64,8 +67,8 @@ export function Sidebar() {
         {/* Logo */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-[#92A3C0]/10 dark:border-[#324A5F]/30">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#A1B5D8] dark:bg-[#1B2A41]">
-              <Film className="h-4 w-4 text-[#2D2B2B] dark:text-[#CCC9DC]" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#A1B5D8] dark:bg-[#1B2A41] overflow-hidden">
+              <img src="/pipoca.ico" alt="MCPFMovies" className="h-full w-full object-contain" />
             </div>
             <span className="font-bold text-base tracking-tight text-[#2D2B2B] dark:text-[#CCC9DC]">
               MCPFMovies
@@ -104,35 +107,37 @@ export function Sidebar() {
             ))}
           </ul>
 
-          {/* Admin Section */}
-          <>
-            <div className="my-4 pt-4 border-t border-[#92A3C0]/10 dark:border-[#324A5F]/30">
-              <p className="px-3 text-xs font-semibold text-[#92A3C0] dark:text-[#A1B5D8] uppercase tracking-wider">
-                Gerenciar
-              </p>
-            </div>
-            <ul className="space-y-0.5">
-              {adminNavItems.map(item => (
-                <li key={item.to}>
-                  <NavLink
-                    to={item.to}
-                    onClick={() => setMobileOpen(false)}
-                    className={({ isActive }) =>
-                      cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                        isActive
-                          ? 'bg-[#A1B5D8]/20 text-[#2D2B2B] dark:bg-[#1B2A41] dark:text-[#CCC9DC]'
-                          : 'text-[#92A3C0] hover:bg-[#92A3C0]/10 hover:text-[#2D2B2B] dark:text-[#A1B5D8] dark:hover:bg-[#1B2A41]/50 dark:hover:text-[#CCC9DC]'
-                      )
-                    }
-                  >
-                    <item.icon className="h-4 w-4 flex-shrink-0" />
-                    {item.label}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </>
+          {/* Admin Section - Only visible for admins */}
+          {profile?.class_series === 'Administrativo' && (
+            <>
+              <div className="my-4 pt-4 border-t border-[#92A3C0]/10 dark:border-[#324A5F]/30">
+                <p className="px-3 text-xs font-semibold text-[#92A3C0] dark:text-[#A1B5D8] uppercase tracking-wider">
+                  Gerenciar
+                </p>
+              </div>
+              <ul className="space-y-0.5">
+                {adminNavItems.map(item => (
+                  <li key={item.to}>
+                    <NavLink
+                      to={item.to}
+                      onClick={() => setMobileOpen(false)}
+                      className={({ isActive }) =>
+                        cn(
+                          'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                          isActive
+                            ? 'bg-[#A1B5D8]/20 text-[#2D2B2B] dark:bg-[#1B2A41] dark:text-[#CCC9DC]'
+                            : 'text-[#92A3C0] hover:bg-[#92A3C0]/10 hover:text-[#2D2B2B] dark:text-[#A1B5D8] dark:hover:bg-[#1B2A41]/50 dark:hover:text-[#CCC9DC]'
+                        )
+                      }
+                    >
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {item.label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </nav>
 
         {/* User section */}

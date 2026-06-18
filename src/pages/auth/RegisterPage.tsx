@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User, Film } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/useAuth';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -54,11 +54,21 @@ export function RegisterPage() {
             <rect x="150" y="50" width="100" height="500" stroke="white" strokeWidth="20" />
           </svg>
         </div>
-        <div className="relative flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
-            <Film className="h-5 w-5 text-white" />
+        <div className="relative">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 mb-8 p-2 -ml-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+            title="Voltar para a página inicial"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="text-sm font-medium">Voltar</span>
+          </Link>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 overflow-hidden">
+              <img src="/pipoca.ico" alt="MCPFMovies" className="h-full w-full object-contain" />
+            </div>
+            <span className="font-bold text-xl text-white tracking-tight">MCPFMovies</span>
           </div>
-          <span className="font-bold text-xl text-white tracking-tight">MCPFMovies</span>
         </div>
         <div className="relative">
           <h3 className="text-white text-2xl font-light leading-relaxed mb-4">
@@ -82,11 +92,20 @@ export function RegisterPage() {
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <div className="flex items-center gap-2 mb-6 lg:hidden">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#AFC7EF] dark:bg-[#1B2A41]">
-                <Film className="h-4 w-4 text-[#2D2B2B] dark:text-[#CCC9DC]" />
+            <div className="flex items-center justify-between mb-6 lg:hidden">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#AFC7EF] dark:bg-[#1B2A41] overflow-hidden">
+                  <img src="/pipoca.ico" alt="MCPFMovies" className="h-full w-full object-contain" />
+                </div>
+                <span className="font-bold text-lg tracking-tight text-[#2D2B2B] dark:text-[#CCC9DC]">MCPFMovies</span>
               </div>
-              <span className="font-bold text-lg tracking-tight text-[#2D2B2B] dark:text-[#CCC9DC]">MCPFMovies</span>
+              <Link
+                to="/"
+                className="p-2 rounded-lg text-[#92A3C0] dark:text-[#A1B5D8] hover:bg-[#AFC7EF]/10 dark:hover:bg-[#1B2A41] transition-colors"
+                title="Voltar para a página inicial"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
             </div>
             <h2 className="text-2xl font-bold text-[#2D2B2B] dark:text-[#CCC9DC]">Criar conta</h2>
             <p className="text-[#92A3C0] dark:text-[#A1B5D8] mt-1 text-sm">Preencha os dados para se cadastrar</p>

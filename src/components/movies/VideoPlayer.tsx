@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/useAuth';
 interface VideoPlayerProps {
   movie: MovieWithMeta;
   onClose: () => void;
+  onRefetch?: () => void;
 }
 
 export function VideoPlayer({ movie, onClose }: VideoPlayerProps) {
@@ -186,10 +187,10 @@ export function VideoPlayer({ movie, onClose }: VideoPlayerProps) {
   const hasVideo = !!movie.video_url;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col">
+    <div className="fixed inset-0 z-50 bg-black flex flex-col overflow-hidden">
       {/* Header */}
       <div className={cn(
-        'absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent transition-opacity duration-300',
+        'flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent transition-opacity duration-300 flex-shrink-0',
         showControls ? 'opacity-100' : 'opacity-0'
       )}>
         <div>
@@ -200,7 +201,7 @@ export function VideoPlayer({ movie, onClose }: VideoPlayerProps) {
         </div>
         <button
           onClick={onClose}
-          className="rounded-full p-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+          className="rounded-full p-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0"
         >
           <X className="h-5 w-5" />
         </button>
@@ -209,62 +210,52 @@ export function VideoPlayer({ movie, onClose }: VideoPlayerProps) {
       {/* Video Area */}
       <div
         ref={containerRef}
-        className="flex-1 relative flex items-center justify-center"
+        className="flex-1 relative flex items-center justify-center bg-black overflow-hidden"
         onMouseMove={showCtrl}
         onClick={togglePlay}
       >
         {hasVideo ? (
           isYouTubeUrl(movie.video_url!) ? (
-            // YouTube iframe - com proporções corretas 16:9
-            <div className="w-full h-full flex items-center justify-center bg-black">
-              <div className="w-full" style={{ aspectRatio: '16 / 9' }}>
-                <iframe
-                  key={`youtube-${getYouTubeVideoId(movie.video_url!)}`}
-                  src={`https://www.youtube.com/embed/${getYouTubeVideoId(movie.video_url!)}?autoplay=1`}
-                  title={movie.title}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                  style={{ border: 'none' }}
-                  onLoad={() => console.log('✅ YouTube iframe loaded')}
-                  onError={() => setVideoError('Falha ao carregar YouTube. Tente recarregar.')}
-                />
-              </div>
-            </div>
+            // YouTube iframe
+            <iframe
+              key={`youtube-${getYouTubeVideoId(movie.video_url!)}`}
+              src={`https://www.youtube.com/embed/${getYouTubeVideoId(movie.video_url!)}?autoplay=1`}
+              title={movie.title}
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              style={{ border: 'none' }}
+              onLoad={() => console.log('✅ YouTube iframe loaded')}
+              onError={() => setVideoError('Falha ao carregar YouTube. Tente recarregar.')}
+              allowFullScreen
+            />
           ) : isMegaEmbedUrl(movie.video_url!) ? (
-            // MEGA embed iframe - suporte direto
-            <div className="w-full h-full flex items-center justify-center bg-black">
-              <div className="w-full" style={{ aspectRatio: '16 / 9' }}>
-                <iframe
-                  key={`mega-${movie.video_url}`}
-                  src={movie.video_url}
-                  title={movie.title}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                  style={{ border: 'none' }}
-                  onLoad={() => console.log('✅ MEGA iframe loaded')}
-                  onError={() => setVideoError('Falha ao carregar MEGA. Link pode estar expirado.')}
-                  allowFullScreen
-                />
-              </div>
-            </div>
+            // MEGA embed iframe
+            <iframe
+              key={`mega-${movie.video_url}`}
+              src={movie.video_url}
+              title={movie.title}
+              className="w-full h-full"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              style={{ border: 'none' }}
+              onLoad={() => console.log('✅ MEGA iframe loaded')}
+              onError={() => setVideoError('Falha ao carregar MEGA. Link pode estar expirado.')}
+              allowFullScreen
+            />
           ) : isGoogleDriveUrl(movie.video_url!) ? (
             // Google Drive embed preview
-            <div className="w-full h-full flex items-center justify-center bg-black">
-              <div className="w-full" style={{ aspectRatio: '16 / 9' }}>
-                <iframe
-                  key={`gdrive-${getGoogleDriveFileId(movie.video_url!)}`}
-                  src={`https://drive.google.com/file/d/${getGoogleDriveFileId(movie.video_url!)}/preview`}
-                  title={movie.title}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                  style={{ border: 'none' }}
-                  onLoad={() => console.log('✅ Google Drive iframe loaded')}
-                  onError={() => setVideoError('Falha ao carregar Google Drive. Arquivo pode estar privado.')}
-                />
-              </div>
-            </div>
+            <iframe
+              key={`gdrive-${getGoogleDriveFileId(movie.video_url!)}`}
+              src={`https://drive.google.com/file/d/${getGoogleDriveFileId(movie.video_url!)}/preview`}
+              title={movie.title}
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              style={{ border: 'none' }}
+              onLoad={() => console.log('✅ Google Drive iframe loaded')}
+              onError={() => setVideoError('Falha ao carregar Google Drive. Arquivo pode estar privado.')}
+              allowFullScreen
+            />
           ) : isMegaUrl(movie.video_url!) ? (
-            // Mega file - renderizar como video tag com tentativa de download
+            // Mega file - renderizar como video tag
             <>
               {videoError ? (
                 <div className="flex flex-col items-center justify-center gap-4 text-center px-8 h-full">
@@ -290,7 +281,7 @@ export function VideoPlayer({ movie, onClose }: VideoPlayerProps) {
                 <video
                   ref={videoRef}
                   src={movie.video_url}
-                  className="max-h-full max-w-full w-full"
+                  className="max-h-full max-w-full"
                   crossOrigin="anonymous"
                   onTimeUpdate={handleTimeUpdate}
                   onLoadedMetadata={() => setDuration(videoRef.current?.duration || 0)}
