@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 2% 17%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 2% 17%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 2% 17%;
+    --primary: 214 44% 72%;
+    --primary-foreground: 0 2% 17%;
+    --secondary: 215 36% 72%;
+    --secondary-foreground: 0 2% 17%;
+    --muted: 220 20% 90%;
+    --muted-foreground: 0 2% 40%;
+    --accent: 217 57% 81%;
+    --accent-foreground: 0 2% 17%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 20% 85%;
+    --input: 220 20% 85%;
+    --ring: 214 44% 72%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 265 14% 84%;
+    --card: 210 49% 8%;
+    --card-foreground: 265 14% 84%;
+    --popover: 210 49% 8%;
+    --popover-foreground: 265 14% 84%;
+    --primary: 214 44% 72%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 207 36% 28%;
+    --secondary-foreground: 265 14% 84%;
+    --muted: 207 36% 18%;
+    --muted-foreground: 265 14% 65%;
+    --accent: 207 36% 28%;
+    --accent-foreground: 265 14% 84%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 265 14% 84%;
+    --border: 207 36% 22%;
+    --input: 207 36% 22%;
+    --ring: 214 44% 72%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* Video player */
+video::-webkit-media-controls {
+  display: flex !important;
+}
+
+/* Transitions */
+* {
+  transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.no-transition * {
+  transition: none !important;
+}
