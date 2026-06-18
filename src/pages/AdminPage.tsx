@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, AlertCircle, Loader, X } from 'lucide-react';
-import { useAuth } from '@/contexts/useAuth';
 import { useMovieManagement, type CreateMovieInput } from '@/hooks/useMovieManagement';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -34,7 +33,6 @@ const CLASS_SERIES = [
 ];
 
 export function AdminPage() {
-  const { profile } = useAuth();
   const { toast } = useToast();
   const { createMovie, uploadFile, loading, error, deleteMovie } = useMovieManagement();
   
@@ -131,7 +129,7 @@ export function AdminPage() {
         });
         return;
       }
-      setEditThumbnailUrl(path);
+      setEditThumbnailUrl(path || '');
       toast({
         title: 'Capa enviada!',
         variant: 'success',
@@ -192,10 +190,10 @@ export function AdminPage() {
         });
         return;
       }
-      setUploadedFiles((prev) => ({ ...prev, [type]: path }));
+      setUploadedFiles((prev) => ({ ...prev, [type]: path || '' }));
       setFormData((prev) => ({
         ...prev,
-        thumbnail_url: path,
+        thumbnail_url: path || '',
       }));
       toast({
         title: `Capa enviada!`,
@@ -222,7 +220,7 @@ export function AdminPage() {
     // Se não fizer upload de capa, usar uma padrão
     const thumbnailUrl = uploadedFiles.thumbnail || 'https://via.placeholder.com/400x600/1B2A41/A1B5D8?text=Sem+Capa';
 
-    const { movie, error: err } = await createMovie({
+    const { error: err } = await createMovie({
       ...formData,
       thumbnail_url: thumbnailUrl,
     });
@@ -370,7 +368,7 @@ export function AdminPage() {
           </Button>
           <Button
             type="button"
-            variant="secondary"
+            variant="outline"
             onClick={() => {
               setFormData({
                 title: '',
@@ -410,7 +408,7 @@ export function AdminPage() {
           <Button
             onClick={loadMovies}
             disabled={loadingMovies}
-            variant="secondary"
+            variant="outline"
             className="text-xs"
           >
             {loadingMovies ? 'Atualizando...' : 'Atualizar'}
@@ -539,7 +537,7 @@ export function AdminPage() {
             </Button>
             <Button
               onClick={() => setEditingMovie(null)}
-              variant="secondary"
+              variant="outline"
               disabled={updatingCover}
               className="flex-1"
             >
